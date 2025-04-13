@@ -1,5 +1,4 @@
 import { Link } from 'wouter';
-// import { useLanguage } from '@/context/LanguageContext';
 import { CategoryWithProductCount } from '@/types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -11,13 +10,18 @@ import {
   faCarrot
 } from '@fortawesome/free-solid-svg-icons';
 
-const iconMap = {
-  'fas fa-seedling': faSeedling,
-  'fas fa-apple-alt': faAppleAlt,
-  'fas fa-wheat-awn': faWheatAlt,
-  'fas fa-mortar-pestle': faMortarPestle,
-  'fas fa-milk-bottle': faBottleWater,
-  'fas fa-carrot': faCarrot
+// Define a mapping from category names to icons
+const getCategoryIcon = (categoryName: string) => {
+  const iconMap: Record<string, any> = {
+    'Vegetables': faSeedling,
+    'Fruits': faAppleAlt, 
+    'Grains': faWheatAlt,
+    'Spices': faMortarPestle,
+    'Dairy': faBottleWater,
+    'Organic': faCarrot
+  };
+  
+  return iconMap[categoryName] || faSeedling;
 };
 
 type CategoryCardProps = {
@@ -28,8 +32,8 @@ export default function CategoryCard({ category }: CategoryCardProps) {
   // Temporary fix - hardcode language to English
   const language = 'en';
   
-  // Get appropriate icon or fallback to seedling
-  const icon = iconMap[category.icon as keyof typeof iconMap] || faSeedling;
+  // Get the appropriate icon based on category name
+  const icon = getCategoryIcon(category.name);
   
   return (
     <Link href={`/products?category=${category.id}`}>
