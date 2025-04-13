@@ -23,9 +23,44 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
-  // Temporary workaround - we'll fix the language context later
-  const t = (key: string) => key;
+  // Temporary workaround - providing hardcoded translations
   const language = 'en';
+  const t = (key: string): string => {
+    const translations: Record<string, string> = {
+      'heroTitle': 'Farm Fresh, Direct to You',
+      'heroSubtitle': 'Connecting farmers and customers across India for fresher food, better prices, and stronger communities.',
+      'imCustomer': 'I\'m a Customer',
+      'imFarmer': 'I\'m a Farmer',
+      'browseByCategoryTitle': 'Browse by Category',
+      'featuredProducts': 'Featured Products',
+      'viewAll': 'View All',
+      'howItWorksTitle': 'How Bharat Fasal Works',
+      'register': 'Register',
+      'registerDesc': 'Sign up as a farmer to sell your produce or as a customer to buy fresh products directly from farms.',
+      'connect': 'Connect',
+      'connectDesc': 'Farmers list their products and customers browse and place orders directly from the source.',
+      'receive': 'Receive',
+      'receiveDesc': 'Products are delivered fresh from farm to door, or arranged for local pickup with maximum freshness.',
+      'farmerBannerTitle': 'Are You a Farmer Looking to Sell Your Produce?',
+      'farmerBannerDesc': 'Join thousands of farmers across India who are selling directly to customers and getting better prices for their produce, without the middleman.',
+      'noCommissionFees': 'No Commission Fees',
+      'directCustomerContact': 'Direct Customer Contact',
+      'simpleInventoryManagement': 'Simple Inventory Management',
+      'registerAsFarmerTitle': 'Register as a Farmer Today',
+      'getStarted': 'Get Started',
+      'termsAgree': 'By registering, you agree to our Terms of Service and Privacy Policy',
+      'testimonialsTitle': 'What Our Users Say',
+      'simpleToolsTitle': 'Simple Tools for Everyone',
+      'simpleToolsDesc': 'Our platform is designed to be easy to use for farmers and customers, regardless of technical expertise.',
+      'mobileFriendly': 'Mobile Friendly',
+      'mobileFriendlyDesc': 'Access Bharat Fasal from any device - computer, tablet, or mobile phone.',
+      'bilingualSupport': 'Bilingual Support',
+      'bilingualSupportDesc': 'Use the platform in English or Hindi, whichever you\'re more comfortable with.',
+      'directCommunication': 'Direct Communication',
+      'directCommunicationDesc': 'Chat directly with farmers or customers to ask questions about products or arrange deliveries.'
+    };
+    return translations[key] || key;
+  };
 
   // Fetch categories
   const { data: categories, isLoading: loadingCategories } = useQuery<CategoryWithProductCount[]>({
