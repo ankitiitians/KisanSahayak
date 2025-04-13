@@ -139,9 +139,12 @@ export default function Home() {
             
             <div className="md:w-1/2 mt-10 md:mt-0 relative">
               <img 
-                src="https://images.unsplash.com/photo-1595356700395-6f14b5ea4fce?ixlib=rb-1.2.1&auto=format&fit=crop&w=640&h=480&q=80" 
+                src="https://images.pexels.com/photos/2255801/pexels-photo-2255801.jpeg?auto=compress&cs=tinysrgb&w=640&h=480" 
                 alt="Farmer with fresh produce" 
                 className="rounded-lg shadow-lg mx-auto z-10 relative"
+                onError={(e) => {
+                  e.currentTarget.src = "https://placehold.co/640x480/e2e8f0/1e293b?text=Farmer+with+produce";
+                }}
               />
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#FFD54F] rounded-full filter blur-3xl opacity-20 -m-10"></div>
             </div>
@@ -357,9 +360,12 @@ export default function Home() {
             <div className="md:w-1/2 order-1 md:order-2 mb-8 md:mb-0">
               <div className="relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1541506618330-7c369fc759b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=400&q=80" 
+                  src="https://images.pexels.com/photos/1684187/pexels-photo-1684187.jpeg?auto=compress&cs=tinysrgb&w=600&h=400" 
                   alt="Farmer using smartphone" 
                   className="rounded-lg shadow-lg mx-auto"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://placehold.co/600x400/e2e8f0/1e293b?text=Farmer+with+phone";
+                  }}
                 />
                 <div className="absolute -bottom-4 -right-4 w-32 h-32 bg-primary rounded-full filter blur-2xl opacity-20"></div>
                 <div className="absolute -top-4 -left-4 w-32 h-32 bg-[#FF6D00] rounded-full filter blur-2xl opacity-20"></div>

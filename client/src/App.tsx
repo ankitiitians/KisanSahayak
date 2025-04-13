@@ -18,6 +18,7 @@ import Checkout from "@/pages/Checkout";
 import Messages from "@/pages/Messages";
 import AddProduct from "@/pages/AddProduct";
 
+// Define router component with all application routes
 function Router() {
   return (
     <Switch>
