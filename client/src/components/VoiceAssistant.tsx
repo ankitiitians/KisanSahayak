@@ -32,7 +32,7 @@ export default function VoiceAssistant({ language }: VoiceAssistantProps) {
 
   useEffect(() => {
     // Check if browser supports speech synthesis
-    if (!'speechSynthesis' in window) {
+    if (!('speechSynthesis' in window)) {
       setHasVoiceSupport(false);
     }
   }, []);

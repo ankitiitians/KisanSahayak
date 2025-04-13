@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import VoiceAssistant from '@/components/VoiceAssistant';
 import { useLanguage } from '@/context/LanguageContext';
 
 type MainLayoutProps = {
@@ -20,6 +21,9 @@ export default function MainLayout({ children }: MainLayoutProps) {
         {children}
       </main>
       <Footer />
+      
+      {/* Add voice assistant for accessibility */}
+      <VoiceAssistant language={language} />
     </div>
   );
 }

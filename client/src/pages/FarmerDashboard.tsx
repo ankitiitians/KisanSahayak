@@ -19,6 +19,7 @@ import {
 } from 'recharts';
 import FarmerProducts from '@/components/FarmerProducts';
 import FarmerOrders from '@/components/FarmerOrders';
+import PricePrediction from '@/components/PricePrediction';
 import { 
   Package, 
   ShoppingCart, 
@@ -153,6 +154,10 @@ export default function FarmerDashboard() {
             <ShoppingCart className="mr-2 h-4 w-4" />
             {t('orders')}
           </TabsTrigger>
+          <TabsTrigger value="pricing">
+            <DollarSign className="mr-2 h-4 w-4" />
+            {language === 'en' ? 'Price Prediction' : 'मूल्य अनुमान'}
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-4">
@@ -283,6 +288,22 @@ export default function FarmerDashboard() {
             </CardHeader>
             <CardContent>
               <FarmerOrders />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="pricing">
+          <Card>
+            <CardHeader>
+              <CardTitle>{language === 'en' ? 'AI Price Prediction' : 'एआई मूल्य अनुमान'}</CardTitle>
+              <CardDescription>
+                {language === 'en' 
+                  ? 'Get competitive price suggestions for your produce based on market trends' 
+                  : 'बाजार रुझानों के आधार पर अपनी उपज के लिए प्रतिस्पर्धी मूल्य सुझाव प्राप्त करें'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PricePrediction language={language} />
             </CardContent>
           </Card>
         </TabsContent>
