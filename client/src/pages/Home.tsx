@@ -23,7 +23,9 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
-  const { t, language } = useLanguage();
+  // Temporary workaround - we'll fix the language context later
+  const t = (key: string) => key;
+  const language = 'en';
 
   // Fetch categories
   const { data: categories, isLoading: loadingCategories } = useQuery<CategoryWithProductCount[]>({

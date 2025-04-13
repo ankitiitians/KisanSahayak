@@ -1,4 +1,4 @@
-import { useLanguage } from '@/context/LanguageContext';
+// import { useLanguage } from '@/context/LanguageContext';
 import { StarIcon } from 'lucide-react';
 
 type TestimonialCardProps = {
@@ -18,7 +18,14 @@ export default function TestimonialCard({
   text, 
   rating 
 }: TestimonialCardProps) {
-  const { t } = useLanguage();
+  // Temporary fix - create simple translation function
+  const t = (key: string): string => {
+    const translations: Record<string, string> = {
+      'farmerLabel': 'Farmer',
+      'customerLabel': 'Customer'
+    };
+    return translations[key] || key;
+  };
   
   return (
     <div className="bg-white p-6 rounded-lg shadow-sm">

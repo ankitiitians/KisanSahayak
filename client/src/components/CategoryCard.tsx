@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import { useLanguage } from '@/context/LanguageContext';
+// import { useLanguage } from '@/context/LanguageContext';
 import { CategoryWithProductCount } from '@/types';
 
 type CategoryCardProps = {
@@ -7,7 +7,8 @@ type CategoryCardProps = {
 };
 
 export default function CategoryCard({ category }: CategoryCardProps) {
-  const { language } = useLanguage();
+  // Temporary fix - hardcode language to English
+  const language = 'en';
   
   return (
     <Link href={`/products?category=${category.id}`}>

@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import { useLanguage } from '@/context/LanguageContext';
+// import { useLanguage } from '@/context/LanguageContext';
 import { ProductWithImages } from '@/types';
 import { Button } from '@/components/ui/button';
 import { StarIcon, MapPinIcon } from 'lucide-react';
@@ -12,7 +12,19 @@ type ProductCardProps = {
 };
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { t, language } = useLanguage();
+  // Temporary fix - hardcode language and translation function
+  const language = 'en';
+  const t = (key: string): string => {
+    const translations: Record<string, string> = {
+      'organic': 'Organic',
+      'seasonal': 'Seasonal',
+      'soldBy': 'Sold by',
+      'addToCart': 'Add to Cart',
+      'error': 'Error'
+    };
+    return translations[key] || key;
+  };
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
