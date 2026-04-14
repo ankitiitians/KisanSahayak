@@ -1,16 +1,15 @@
 version: "3.9"
 
 services:
-  # ─────────────────────────────────────────────
-  # PostgreSQL Database
-  # ─────────────────────────────────────────────
+
+  # ── PostgreSQL 16 ─────────────────────────────────────────
   db:
     image: postgres:16-alpine
     container_name: kisansahayak_db
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-kisan}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kisanpassword}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_DB: ${POSTGRES_DB:-kisansahayak}
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -26,10 +25,9 @@ services:
         limits:
           memory: 512m
 
-  # ─────────────────────────────────────────────
-  # DB Migration — runs drizzle-kit push ONCE on startup
-  # Ek baar chalke band ho jaata hai (one-shot service)
-  # ─────────────────────────────────────────────
+  # ── DB Migration (one-shot) ────────────────────────────────
+  # Runs drizzle-kit push once after DB is healthy, then exits.
+  # The app service waits for this to complete before starting.
   db-migrate:
     image: ${DOCKER_IMAGE:-kisansahayak:latest}
     build:
@@ -38,16 +36,14 @@ services:
     container_name: kisansahayak_migrate
     restart: "no"
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-kisan}:${POSTGRES_PASSWORD:-kisanpassword}@db:5432/${POSTGRES_DB:-kisansahayak}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kisan}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-kisansahayak}
       NODE_ENV: production
     depends_on:
       db:
         condition: service_healthy
     command: ["npx", "drizzle-kit", "push"]
 
-  # ─────────────────────────────────────────────
-  # KisanSahayak Application
-  # ─────────────────────────────────────────────
+  # ── Application ────────────────────────────────────────────
   app:
     image: ${DOCKER_IMAGE:-kisansahayak:latest}
     container_name: kisansahayak_app
@@ -55,13 +51,13 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
-    ports:
-      - "5000:5000"
+    expose:
+      - "5000"
     environment:
       NODE_ENV: production
       PORT: 5000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-kisan}:${POSTGRES_PASSWORD:-kisanpassword}@db:5432/${POSTGRES_DB:-kisansahayak}
-      SESSION_SECRET: ${SESSION_SECRET:-change_this_secret_in_production}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kisan}:${POSTGRES_PASSWORD:-changeme}@db:5432/${POSTGRES_DB:-kisansahayak}
+      SESSION_SECRET: ${SESSION_SECRET:-change_this_in_production}
     depends_on:
       db:
         condition: service_healthy
@@ -77,6 +73,21 @@ services:
       resources:
         limits:
           memory: 512m
+
+  # ── Nginx Reverse Proxy ────────────────────────────────────
+  # Sits in front of the app, handles HTTP on port 80.
+  # Swap the nginx.conf for HTTPS / SSL termination in production.
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: kisansahayak_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
 
 volumes:
   postgres_data:

@@ -3,7 +3,6 @@
 # Apply: kubectl apply -f k8s/postgres.yaml
 # ============================================================
 
-# PersistentVolumeClaim — DB data store
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -17,7 +16,6 @@ spec:
       storage: 5Gi
 
 ---
-# Deployment — PostgreSQL 16
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -77,7 +75,6 @@ spec:
             claimName: postgres-pvc
 
 ---
-# Service — internal ClusterIP for DB
 apiVersion: v1
 kind: Service
 metadata:

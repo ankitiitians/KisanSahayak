@@ -1,9 +1,8 @@
 # ============================================================
-# KisanSahayak — App Kubernetes Manifests
+# KisanSahayak — Application Kubernetes Manifests
 # Apply: kubectl apply -f k8s/app.yaml
 # ============================================================
 
-# Deployment — KisanSahayak App (2 replicas by default)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -11,6 +10,7 @@ metadata:
   namespace: kisansahayak
   labels:
     app: kisansahayak
+    version: "1.0"
 spec:
   replicas: 2
   selector:
@@ -20,7 +20,7 @@ spec:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
-      maxUnavailable: 0        # zero downtime deployments
+      maxUnavailable: 0      # zero-downtime: new pod must be ready before old is removed
   template:
     metadata:
       labels:
@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: kisansahayak
-          image: yourusername/kisansahayak:latest   # apna DockerHub username daalo
+          image: yourusername/kisansahayak:latest   # replace with your DockerHub username
           imagePullPolicy: Always
           ports:
             - containerPort: 5000
@@ -70,7 +70,6 @@ spec:
               cpu: "500m"
 
 ---
-# Service — LoadBalancer (cloud) or NodePort (minikube)
 apiVersion: v1
 kind: Service
 metadata:
@@ -79,14 +78,15 @@ metadata:
 spec:
   selector:
     app: kisansahayak
-  type: LoadBalancer      # minikube pe: NodePort use karo
+  type: LoadBalancer      # use NodePort for local minikube/kind clusters
   ports:
     - port: 80
       targetPort: 5000
       protocol: TCP
 
 ---
-# HorizontalPodAutoscaler — CPU pe auto scale
+# HorizontalPodAutoscaler — scales between 2 and 10 replicas
+# based on average CPU utilization across all pods
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
