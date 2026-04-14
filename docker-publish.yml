@@ -1,0 +1,70 @@
+# ============================================================
+# GitHub Actions — Auto Build + Push to DockerHub
+# Trigger: main branch pe push hone par automatically chalega
+# ============================================================
+
+name: Build & Push to DockerHub
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/kisansahayak
+
+jobs:
+  build-and-push:
+    name: Build Docker Image & Push
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Code checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Docker Buildx setup (multi-platform support)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: DockerHub login
+      # GitHub repo Settings > Secrets mein daalo:
+      #   DOCKERHUB_USERNAME = tera DockerHub username
+      #   DOCKERHUB_TOKEN    = DockerHub access token (password nahi)
+      - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Step 4: Image tags generate karo (latest + git SHA)
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_IMAGE }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha,prefix=sha-,format=short
+            type=semver,pattern={{version}}
+
+      # Step 5: Build + Push
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          dockerfile: Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # Cache layers for faster builds
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Step 6: Image digest print karo
+      - name: Print image digest
+        run: echo "Image pushed with digest ${{ steps.build-and-push.outputs.digest }}"

@@ -1,0 +1,108 @@
+# ============================================================
+# KisanSahayak — App Kubernetes Manifests
+# Apply: kubectl apply -f k8s/app.yaml
+# ============================================================
+
+# Deployment — KisanSahayak App (2 replicas by default)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kisansahayak
+  namespace: kisansahayak
+  labels:
+    app: kisansahayak
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kisansahayak
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0        # zero downtime deployments
+  template:
+    metadata:
+      labels:
+        app: kisansahayak
+    spec:
+      containers:
+        - name: kisansahayak
+          image: yourusername/kisansahayak:latest   # apna DockerHub username daalo
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: PORT
+              value: "5000"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: kisansahayak-secret
+                  key: DATABASE_URL
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: kisansahayak-secret
+                  key: SESSION_SECRET
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 45
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+
+---
+# Service — LoadBalancer (cloud) or NodePort (minikube)
+apiVersion: v1
+kind: Service
+metadata:
+  name: kisansahayak-service
+  namespace: kisansahayak
+spec:
+  selector:
+    app: kisansahayak
+  type: LoadBalancer      # minikube pe: NodePort use karo
+  ports:
+    - port: 80
+      targetPort: 5000
+      protocol: TCP
+
+---
+# HorizontalPodAutoscaler — CPU pe auto scale
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: kisansahayak-hpa
+  namespace: kisansahayak
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: kisansahayak
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
